@@ -4,8 +4,15 @@ class Cab:
         self.seats = seats
         self.status = status
         self.headed_to = headed_to
-        self.students = students_list
+        self.students_list = students_list
         self.time_slot = time_slot
+    def display(self):
+        print("Driver name: ",self.name)
+        print("No of seats: ",self.seats)
+        print("headed to:",self.headed_to)
+        print("Status cab left?",self.status)
+        print("Time slot: ",self.time_slot)
+        print("Empty seats: ",self.seats-len(self.students_list),"/",self.seats)
 
 class RideRequest:
     def __init__(self, name, destination, time_slot, year):
@@ -19,7 +26,12 @@ class RideRequest:
 
 
 waiting_request = []
-
+cabs_available = []
+#sample cabs test cases later to be changed by a csv or json file
+list1 = []
+list2 = []
+cabs_available.append(Cab("Amit",3,False,"Jaipur",list1,"Morning"))
+cabs_available.append(Cab("Rajesh",4,False,"Delhi",list2,"Evening"))
 while True:
     print("===CAB_FINDER===")
     print("1.to add new request")
@@ -30,7 +42,14 @@ while True:
         print("Adding new request")
         waiting_request.append(RideRequest(input("Enter name: "), input("Enter destination: "), input("Enter time slot: "), input("Enter year: ")))
     elif choice == "2" :
-        pass #print waiting students and available cabs
+        #printing waiting students
+        if len(waiting_request) == 0:
+            print("No students are currently waiting...")
+        for i in range(0,len(waiting_request)):
+            waiting_request[i].display()
+        #printing available cabs
+        for i in range(0,len(cabs_available)):
+            cabs_available[i].display()
     elif choice == "3" :
         break
     else:
