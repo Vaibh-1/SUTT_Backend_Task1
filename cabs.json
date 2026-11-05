@@ -1,0 +1,21 @@
+
+[
+  {
+    "name": "Ramesh",
+    "seats": 4,
+    "headed_to": "Delhi",
+    "time_slot": "Morning"
+  },
+  {
+    "name": "Suresh",
+    "seats": 3,
+    "headed_to": "Jaipur",
+    "time_slot": "Night"
+  },
+  {
+    "name": "Mahesh",
+    "seats": 2,
+    "headed_to": "Delhi",
+    "time_slot": "Morning"
+  }
+]
