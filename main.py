@@ -23,7 +23,9 @@ class RideRequest:
 
     def display(self):
         print(self.name,self.destination,self.time_slot,self.year)
-
+#Accpeted inputs for RideRequest
+times_accepted = ["Morning","Evening","Afternoon","Night"]
+locations_accepted = ["Delhi","Jaipur"]
 
 waiting_request = []
 cabs_available = []
@@ -39,8 +41,31 @@ while True:
     print("3.to close app")
     choice = input("Choose an option: ")
     if choice == "1":
-        print("Adding new request")
-        waiting_request.append(RideRequest(input("Enter name: "), input("Enter destination: "), input("Enter time slot: "), input("Enter year: ")))
+        #input the correct info
+        while True:
+            name = input("Enter name: ")
+            destination = input("Enter destination:")
+            if destination in locations_accepted:
+                pass
+            else:
+                print("The destination is invlaid please try something else...")
+                continue
+            time = input("Enter time slot: ")
+            if time in times_accepted:
+                pass
+            else:
+                print("Time invalid Error try something else...")
+                continue
+            try:
+                year = int(input("Enter year:"))
+            except ValueError:
+                print("Try again...")  
+                continue  
+            if 1 <=year<= 5:
+                break
+            else:
+                print("Try again...")        
+        waiting_request.append(RideRequest(name, destination, time, year))
     elif choice == "2" :
         #printing waiting students
         if len(waiting_request) == 0:
@@ -53,4 +78,4 @@ while True:
     elif choice == "3" :
         break
     else:
-        print("Invalid input")
+        print("Invalid input")        
