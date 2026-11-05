@@ -1,3 +1,4 @@
+from datetime import datetime
 class Cab:
     def __init__(self, name, seats, status, headed_to, students_list, time_slot):
         self.name = name
@@ -15,14 +16,21 @@ class Cab:
         print("Occupied seats: ",len(self.students_list),"/",self.seats)
 
 class RideRequest:
-    def __init__(self, name, destination, time_slot, year):
+    def __init__(self, name, destination, time_slot, year, request_time):
         self.name = name
         self.destination = destination
         self.time_slot = time_slot
         self.year = year
+        self.request_time = request_time
 
     def display(self):
-        print(self.name,self.destination,self.time_slot,self.year)
+        print("Requesters name:",self.name)
+        print("Going to:",self.destination)
+        print("Time of going",self.time_slot)
+        print("Current academic year:",self.year)
+        print("Time of request:",self.request_time)
+
+#Functions to get inputs        
 def get_correct_input(prompt,accepted_values):
     while True:
         value = input(f"Enter {prompt}:").strip().lower()
@@ -43,7 +51,7 @@ def get_correct_year(max_year):
             print("Try again...")
 def get_correct_name():
     while True:
-        name = input("Enter name:")
+        name = input("Enter name:").strip()
         if name:
             return name
         else:
@@ -59,6 +67,8 @@ list1 = []
 list2 = []
 cabs_available.append(Cab("Amit",3,False,"jaipur",list1,"morning"))
 cabs_available.append(Cab("Rajesh",4,False,"delhi",list2,"evening"))
+
+#App menu and logic
 while True:
     print("===CAB_FINDER===")
     print("1.to add new request")
@@ -67,7 +77,7 @@ while True:
     choice = input("Choose an option: ")
     if choice == "1":
         #input the correct info       
-        waiting_request.append(RideRequest(get_correct_name(), get_correct_input("location",locations_accepted), get_correct_input("time",times_accepted), get_correct_year(max_year)))
+        waiting_request.append(RideRequest(get_correct_name(), get_correct_input("location",locations_accepted), get_correct_input("time",times_accepted), get_correct_year(max_year), datetime.now()))
     elif choice == "2" :
         #printing waiting students
         if len(waiting_request) == 0:
