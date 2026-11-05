@@ -42,6 +42,8 @@ def find_matches(cabs_available,waiting_request):
                 if requests.time_slot == cabs.time_slot and requests.destination == cabs.headed_to:
                     if cabs.seats > len(temporary_passengers):
                         temporary_passengers.append(requests)
+                    else:
+                        break    
             cabs.display()            
             print("Tentative Passengers:")    
             print(f"Potential Seats filled:{len(temporary_passengers)}/{cabs.seats}")         
@@ -49,6 +51,31 @@ def find_matches(cabs_available,waiting_request):
                 passengers.display()
             if len(temporary_passengers) == 0:
                 print("There are no matches for this cab...")
+
+#Final Dispatches not considering seniority only on bases of time
+def dipatch_cabs(cabname,cabs_available,waiting_request):
+    for cabs in cabs_available:
+            if cabs.status == False and cabname == cabs.name:
+                passengers = []
+                for requests in waiting_request:
+                    if requests.time_slot == cabs.time_slot and requests.destination == cabs.headed_to:
+                        if cabs.seats > len(passengers):
+                            passengers.append(requests)
+                        else:
+                            break    
+                cabs.students_list = passengers.copy()   
+                print(f"Seats filled:{len(passengers)}/{cabs.seats}")    
+                for students in cabs.students_list:
+                    students.display()
+                    waiting_request.remove(students)
+                if len(cabs.students_list) == 0:
+                    print("There are no matches for this cab...")
+                else:
+                    cabs.status = True 
+                cabs.display()            
+                print("Final Passengers are above mentioned:")
+                return 0 #this is added becuase there is a loop and for same names it would do it twice will find a better fix
+                    
 
 #Functions to get inputs        
 def get_correct_input(prompt,accepted_values):
@@ -110,6 +137,7 @@ while True:
     print("2.to view waiting students and available cabs")
     print("3.to close app")
     print("4.to find mathces")
+    print("5.to dispatch cabs")
     choice = input("Choose an option: ")
     if choice == "1":
         #input the correct info       
@@ -127,5 +155,9 @@ while True:
         break
     elif choice == "4" :
         find_matches(cabs_available,waiting_request)
+    elif choice == "5":
+        #need to find a better way to implement this as same names can have a problem 
+        cabname = input("Enter the driver name of the cab that you want to despatch:")
+        dipatch_cabs(cabname,cabs_available,waiting_request)
     else:
         print("Invalid input")        
