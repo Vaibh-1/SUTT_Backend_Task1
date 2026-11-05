@@ -12,7 +12,7 @@ class Cab:
         print("headed to:",self.headed_to)
         print("Status cab left?",self.status)
         print("Time slot: ",self.time_slot)
-        print("Empty seats: ",self.seats-len(self.students_list),"/",self.seats)
+        print("Occupied seats: ",len(self.students_list),"/",self.seats)
 
 class RideRequest:
     def __init__(self, name, destination, time_slot, year):
@@ -23,17 +23,42 @@ class RideRequest:
 
     def display(self):
         print(self.name,self.destination,self.time_slot,self.year)
+def get_correct_input(prompt,accepted_values):
+    while True:
+        value = input(f"Enter {prompt}:").strip().lower()
+        if value in accepted_values:
+            return value
+        else:
+            print("Invalid Input try again")
+def get_correct_year(max_year):
+    while True:
+        try:
+            year = int(input("Enter year:"))
+        except ValueError:
+            print("Try again...")  
+            continue  
+        if 1 <=year<= max_year:
+            return year
+        else:
+            print("Try again...")
+def get_correct_name():
+    while True:
+        name = input("Enter name:")
+        if name:
+            return name
+        else:
+            print("Enter valid name")   
 #Accpeted inputs for RideRequest
-times_accepted = ["Morning","Evening","Afternoon","Night"]
-locations_accepted = ["Delhi","Jaipur"]
-
+times_accepted = ["morning","evening","afternoon","night"]
+locations_accepted = ["delhi","jaipur"]
+max_year = 5
 waiting_request = []
 cabs_available = []
 #sample cabs test cases later to be changed by a csv or json file
 list1 = []
 list2 = []
-cabs_available.append(Cab("Amit",3,False,"Jaipur",list1,"Morning"))
-cabs_available.append(Cab("Rajesh",4,False,"Delhi",list2,"Evening"))
+cabs_available.append(Cab("Amit",3,False,"jaipur",list1,"morning"))
+cabs_available.append(Cab("Rajesh",4,False,"delhi",list2,"evening"))
 while True:
     print("===CAB_FINDER===")
     print("1.to add new request")
@@ -41,31 +66,8 @@ while True:
     print("3.to close app")
     choice = input("Choose an option: ")
     if choice == "1":
-        #input the correct info
-        while True:
-            name = input("Enter name: ")
-            destination = input("Enter destination:")
-            if destination in locations_accepted:
-                pass
-            else:
-                print("The destination is invlaid please try something else...")
-                continue
-            time = input("Enter time slot: ")
-            if time in times_accepted:
-                pass
-            else:
-                print("Time invalid Error try something else...")
-                continue
-            try:
-                year = int(input("Enter year:"))
-            except ValueError:
-                print("Try again...")  
-                continue  
-            if 1 <=year<= 5:
-                break
-            else:
-                print("Try again...")        
-        waiting_request.append(RideRequest(name, destination, time, year))
+        #input the correct info       
+        waiting_request.append(RideRequest(get_correct_name(), get_correct_input("location",locations_accepted), get_correct_input("time",times_accepted), get_correct_year(max_year)))
     elif choice == "2" :
         #printing waiting students
         if len(waiting_request) == 0:
