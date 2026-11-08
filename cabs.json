@@ -1,21 +1,146 @@
-
-[
+  [
   {
-    "name": "Ramesh",
+    "name": "Amit Sharma",
     "seats": 4,
-    "headed_to": "Delhi",
-    "time_slot": "Morning"
+    "headed_to": "delhi",
+    "time_slot": "morning"
   },
   {
-    "name": "Suresh",
+    "name": "Rohit Meena",
     "seats": 3,
-    "headed_to": "Jaipur",
-    "time_slot": "Night"
+    "headed_to": "delhi",
+    "time_slot": "morning"
   },
   {
-    "name": "Mahesh",
+    "name": "Deepak Yadav",
     "seats": 2,
-    "headed_to": "Delhi",
-    "time_slot": "Morning"
+    "headed_to": "delhi",
+    "time_slot": "morning"
+  },
+  {
+    "name": "Sanjay Kumar",
+    "seats": 4,
+    "headed_to": "delhi",
+    "time_slot": "afternoon"
+  },
+  {
+    "name": "Arjun Singh",
+    "seats": 3,
+    "headed_to": "delhi",
+    "time_slot": "afternoon"
+  },
+  {  
+    "name": "Vikas Saini",
+    "seats": 1,
+    "headed_to": "delhi",
+    "time_slot": "afternoon"
+  },
+  {
+    "name": "Ravi Choudhary",
+    "seats": 4,
+    "headed_to": "delhi",
+    "time_slot": "evening"
+  },
+  {
+    "name": "Mohit Verma",
+    "seats": 2,
+    "headed_to": "delhi",
+    "time_slot": "evening"
+  },
+  {
+    "name": "Karan Bansal",
+    "seats": 3,
+    "headed_to": "delhi",
+    "time_slot": "evening"
+  },
+  {
+    "name": "Naveen Joshi",
+    "seats": 2,
+    "headed_to": "delhi",
+    "time_slot": "night"
+  },
+  {
+    "name": "Manoj Gupta",
+    "seats": 4,
+    "headed_to": "delhi",
+    "time_slot": "night"
+  },
+  {
+    "name": "Suresh Patil",
+    "seats": 3,
+    "headed_to": "delhi",
+    "time_slot": "night"
+  },
+  {
+    "name": "Ajay Rathore",
+    "seats": 4,
+    "headed_to": "jaipur",
+    "time_slot": "morning"
+  },
+  {
+    "name": "Pankaj Jat",
+    "seats": 2,
+    "headed_to": "jaipur",
+    "time_slot": "morning"
+  },
+  {
+    "name": "Mahesh Choudhary",
+    "seats": 3,
+    "headed_to": "jaipur",
+    "time_slot": "morning"
+  },
+  {
+    "name": "Rajesh Soni",
+    "seats": 4,
+    "headed_to": "jaipur",
+    "time_slot": "afternoon"
+  },
+  {
+    "name": "Vinod Gurjar",
+    "seats": 1,
+    "headed_to": "jaipur",
+    "time_slot": "afternoon"
+  },
+  {
+    "name": "Nitin Jain",
+    "seats": 3,
+    "headed_to": "jaipur",
+    "time_slot": "afternoon"
+  },
+  {
+    "name": "Harish Agarwal",
+    "seats": 4,
+    "headed_to": "jaipur",
+    "time_slot": "evening"
+  },
+  {
+    "name": "Prakash Mali",
+    "seats": 2,
+    "headed_to": "jaipur",
+    "time_slot": "evening"
+  },
+  {
+    "name": "Dinesh Prajapat",
+    "seats": 3,
+    "headed_to": "jaipur",
+    "time_slot": "evening"
+  },
+  {
+    "name": "Ramesh Yadav",
+    "seats": 2,
+    "headed_to": "jaipur",
+    "time_slot": "night"
+  },
+  {
+    "name": "Gopal Singh",
+    "seats": 4,
+    "headed_to": "jaipur",
+    "time_slot": "night"
+  },
+  {
+    "name": "Lokesh Sharma",
+    "seats": 1,
+    "headed_to": "jaipur",
+    "time_slot": "night"
   }
 ]

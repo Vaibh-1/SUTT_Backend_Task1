@@ -33,7 +33,7 @@ class RideRequest:
         print("Current academic year:",self.year)
         print("Time of request:",self.request_time)
 
-#Find matches 
+#Find matches (Final)
 def find_matches(cabs_available):
     for cabs in cabs_available:
         if cabs.status == False:
@@ -41,7 +41,7 @@ def find_matches(cabs_available):
             queue = waiting_queues.get((cabs.headed_to, cabs.time_slot), [])
             selected = heapq.nsmallest(cabs.seats, queue)
             for requests in selected:
-                temporary_passengers.append(requests[2])    
+                temporary_passengers.append(requests[3])    
             cabs.display()            
             print("Tentative Passengers:")    
             print(f"Potential Seats filled:{len(temporary_passengers)}/{cabs.seats}")         
@@ -50,31 +50,32 @@ def find_matches(cabs_available):
             if len(temporary_passengers) == 0:
                 print("There are no matches for this cab...")
 
-#Final Dispatches not considering seniority only on bases of time
-def dipatch_cabs(cab_destination,cab_time,cabs_available,waiting_request):#instead of using the waiting_request i need to use the qeues
+#Final Dispatches considering seniority 
+def dipatch_cabs(cab_destination,cab_time,cabs_available):
     for cabs in cabs_available:
             if cabs.status == False and cabs.time_slot == cab_time and cabs.headed_to == cab_destination:
                 passengers = []
-                for requests in waiting_request:
-                    if requests.time_slot == cabs.time_slot and requests.destination == cabs.headed_to:
-                        if cabs.seats > len(passengers):
-                            passengers.append(requests)
-                        else:
-                            break    
-                cabs.students_list = passengers.copy()   
-                print(f"Seats filled:{len(passengers)}/{cabs.seats}")    
-                for students in cabs.students_list:
-                    students.display()
-                    waiting_request.remove(students)
+                queue = waiting_queues.get((cabs.headed_to, cabs.time_slot), [])
+                while(len(passengers)<cabs.seats and len(queue)!=0):
+                    selected = heapq.heappop(queue)
+                    passengers.append(selected[3])
+                    waiting_request.remove(selected[3])   
+                cabs.students_list = passengers.copy()      
                 if len(cabs.students_list) == 0:
-                    print("There are no matches for this cab...")
-                else:
-                    cabs.status = True 
+                    print("There are no matches for this cab...") 
+                    return 0
+                print(f"Seats filled:{len(passengers)}/{cabs.seats}")
+                print("Details of all the passengers of the cab")    
+                for passenger in passengers:
+                    passenger.display()
+                cabs.status = True 
                 cabs.display()            
                 print("Final Passengers are above mentioned:")
+                return 0
+    print("no cabs are available at this time for this location please try again later...")
+    return 0
                 
                     
-
 #Functions to get inputs        
 def get_correct_input(prompt,accepted_values):
     while True:
@@ -128,6 +129,8 @@ try:
 except (FileNotFoundError, json.JSONDecodeError) as error:
     print("Could not load cabs:", error)
 
+count = 0 
+
 #App menu and logic
 while True:
     print("===CAB_FINDER===")
@@ -146,7 +149,8 @@ while True:
         request_time = datetime.now()   
         request = RideRequest(name,location,time,year,request_time)  
         waiting_request.append(request)
-        heapq.heappush(waiting_queues.setdefault((location,time), []), (-(request.year),request.request_time,request))
+        heapq.heappush(waiting_queues.setdefault((location,time), []), (-(request.year),request.request_time,count,request))
+        count+=1
         
     elif choice == "2" :
         #printing waiting students
@@ -164,6 +168,7 @@ while True:
     elif choice == "5":
         cab_destination = input("Enter the destination of cab to be dispatched:").strip().lower()
         cab_time = input("Enter the time:").strip().lower()
-        dipatch_cabs(cab_destination,cab_time,cabs_available,waiting_request)
+        dipatch_cabs(cab_destination,cab_time,cabs_available)
     else:
         print("Invalid input")        
+        
