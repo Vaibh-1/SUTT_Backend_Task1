@@ -34,16 +34,14 @@ class RideRequest:
         print("Time of request:",self.request_time)
 
 #Find matches 
-def find_matches(cabs_available,waiting_request):
+def find_matches(cabs_available):
     for cabs in cabs_available:
         if cabs.status == False:
             temporary_passengers = []
-            for requests in waiting_request:
-                if requests.time_slot == cabs.time_slot and requests.destination == cabs.headed_to:
-                    if cabs.seats > len(temporary_passengers):
-                        temporary_passengers.append(requests)
-                    else:
-                        break    
+            queue = waiting_queues.get((cabs.headed_to, cabs.time_slot), [])
+            selected = heapq.nsmallest(cabs.seats, queue)
+            for requests in selected:
+                temporary_passengers.append(requests[2])    
             cabs.display()            
             print("Tentative Passengers:")    
             print(f"Potential Seats filled:{len(temporary_passengers)}/{cabs.seats}")         
@@ -162,7 +160,7 @@ while True:
     elif choice == "3" :
         break
     elif choice == "4" :
-        find_matches(cabs_available,waiting_request)
+        find_matches(cabs_available)
     elif choice == "5":
         cab_destination = input("Enter the destination of cab to be dispatched:").strip().lower()
         cab_time = input("Enter the time:").strip().lower()
