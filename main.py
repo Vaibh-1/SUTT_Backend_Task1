@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-
+import heapq
 
 class Cab:
     def __init__(self, name, seats, status, headed_to, students_list, time_slot):
@@ -53,9 +53,9 @@ def find_matches(cabs_available,waiting_request):
                 print("There are no matches for this cab...")
 
 #Final Dispatches not considering seniority only on bases of time
-def dipatch_cabs(cabname,cabs_available,waiting_request):
+def dipatch_cabs(cab_destination,cab_time,cabs_available,waiting_request):#instead of using the waiting_request i need to use the qeues
     for cabs in cabs_available:
-            if cabs.status == False and cabname == cabs.name:
+            if cabs.status == False and cabs.time_slot == cab_time and cabs.headed_to == cab_destination:
                 passengers = []
                 for requests in waiting_request:
                     if requests.time_slot == cabs.time_slot and requests.destination == cabs.headed_to:
@@ -74,7 +74,7 @@ def dipatch_cabs(cabname,cabs_available,waiting_request):
                     cabs.status = True 
                 cabs.display()            
                 print("Final Passengers are above mentioned:")
-                return 0 #this is added becuase there is a loop and for same names it would do it twice will find a better fix
+                
                     
 
 #Functions to get inputs        
@@ -102,7 +102,7 @@ def get_correct_name():
         if name:
             return name
         else:
-            print("Enter valid name")   
+            print("Enter valid name")      
 #Accpeted inputs for RideRequest
 times_accepted = ["morning","evening","afternoon","night"]
 locations_accepted = ["delhi","jaipur"]
@@ -110,6 +110,7 @@ max_year = 5
 waiting_request = []
 cabs_available = []
 #inputting cabs from json and creating them into objects
+waiting_queues = {}
 
 try:
     with open("cabs.json", "r") as file:
@@ -129,7 +130,6 @@ try:
 except (FileNotFoundError, json.JSONDecodeError) as error:
     print("Could not load cabs:", error)
 
-
 #App menu and logic
 while True:
     print("===CAB_FINDER===")
@@ -140,8 +140,16 @@ while True:
     print("5.to dispatch cabs")
     choice = input("Choose an option: ")
     if choice == "1":
-        #input the correct info       
-        waiting_request.append(RideRequest(get_correct_name(), get_correct_input("where to ",locations_accepted), get_correct_input("time of travelling",times_accepted), get_correct_year(max_year), datetime.now()))
+        #input the correct info  
+        name = get_correct_name()
+        location = get_correct_input("where to",locations_accepted)
+        time = get_correct_input("time of travelling",times_accepted)
+        year = get_correct_year(max_year)
+        request_time = datetime.now()   
+        request = RideRequest(name,location,time,year,request_time)  
+        waiting_request.append(request)
+        heapq.heappush(waiting_queues.setdefault((location,time), []), (-(request.year),request.request_time,request))
+        
     elif choice == "2" :
         #printing waiting students
         if len(waiting_request) == 0:
@@ -156,8 +164,8 @@ while True:
     elif choice == "4" :
         find_matches(cabs_available,waiting_request)
     elif choice == "5":
-        #need to find a better way to implement this as same names can have a problem 
-        cabname = input("Enter the driver name of the cab that you want to despatch:")
-        dipatch_cabs(cabname,cabs_available,waiting_request)
+        cab_destination = input("Enter the destination of cab to be dispatched:").strip().lower()
+        cab_time = input("Enter the time:").strip().lower()
+        dipatch_cabs(cab_destination,cab_time,cabs_available,waiting_request)
     else:
         print("Invalid input")        
