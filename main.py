@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 import heapq
+from pathlib import Path
 
 class Cab:
     def __init__(self, name, seats, status, headed_to, students_list, time_slot):
@@ -71,6 +72,7 @@ def dipatch_cabs(cab_destination,cab_time,cabs_available):
                 cabs.status = True 
                 cabs.display()            
                 print("Final Passengers are above mentioned:")
+                save_state(waiting_request, cabs_available, count)
                 return 0
     print("no cabs are available at this time for this location please try again later...")
     return 0
@@ -101,7 +103,76 @@ def get_correct_name():
         if name:
             return name
         else:
-            print("Enter valid name")      
+            print("Enter valid name") 
+
+#Functions to load and save app data
+def save_state(waiting_request,cabs_available,count):
+    requests = []
+    for request in waiting_request:
+        requests.append({
+            "time_slot" : request.time_slot,
+            "name" : request.name,
+            "year" : request.year,
+            "request_time" : request.request_time.isoformat(),
+            "destination" : request.destination
+            })
+    cabs_save = []
+    for cabs in cabs_available:
+        passengers = []
+        for passenger in cabs.students_list:
+            passengers.append({
+                "time_slot" : passenger.time_slot,
+                "name" : passenger.name,
+                "year" : passenger.year,
+                "request_time" : passenger.request_time.isoformat(),
+                "destination" : passenger.destination
+             })
+        cabs_save.append({
+            "name": cabs.name,
+            "seats": cabs.seats,
+            "status": cabs.status,
+            "headed_to": cabs.headed_to,
+            "time_slot": cabs.time_slot,
+            "students_list": passengers
+        })
+    state = {
+        "waiting_requests": requests,
+        "cabs": cabs_save,
+        "count_of_requests": count 
+    }
+    with open("state.json", "w") as file:
+        json.dump(state, file, indent=4)     
+def load_data(waiting_request,cabs_available,waiting_queues):
+    with open("state.json", "r") as file:
+        state = json.load(file)
+    saved_requests = state["waiting_requests"]
+    saved_cabs = state["cabs"]
+    for data in saved_requests:
+        request_time = datetime.fromisoformat(data["request_time"])
+        name = data["name"]
+        year = data["year"]
+        time_slot = data["time_slot"]
+        destination = data["destination"]
+        request = RideRequest(name,destination,time_slot,year,request_time)
+        waiting_request.append(request)      
+    for index, request in enumerate(waiting_request):
+        key = (request.destination, request.time_slot)
+
+        heapq.heappush(
+            waiting_queues.setdefault(key, []),
+            (-request.year, request.request_time, index, request)
+        )
+    for cabs in saved_cabs:
+        passengers = []
+        for passenger_info in cabs["students_list"]:
+            passenger = RideRequest(passenger_info["name"],passenger_info["destination"],passenger_info["time_slot"],passenger_info["year"],datetime.fromisoformat(passenger_info["request_time"]))
+            passengers.append(passenger)
+        cab = Cab(cabs["name"],cabs["seats"],cabs["status"],cabs["headed_to"],passengers,cabs["time_slot"])      
+        cabs_available.append(cab)  
+    return max(
+        len(waiting_request),
+        state.get("count_of_requests", 0)
+    )     
 #Accpeted inputs for RideRequest
 times_accepted = ["morning","evening","afternoon","night"]
 locations_accepted = ["delhi","jaipur"]
@@ -111,25 +182,31 @@ cabs_available = []
 #inputting cabs from json and creating them into objects
 waiting_queues = {}
 
-try:
-    with open("cabs.json", "r") as file:
-        cab_data = json.load(file)
-
-    for cab in cab_data:
-        new_cab = Cab(
-            cab["name"],
-            cab["seats"],
-            False,
-            cab["headed_to"].strip().lower(),
-            [],
-            cab["time_slot"].strip().lower()
-        )
-        cabs_available.append(new_cab)
-
-except (FileNotFoundError, json.JSONDecodeError) as error:
-    print("Could not load cabs:", error)
-
 count = 0 
+
+if Path("state.json").is_file():
+    count = load_data(waiting_request, cabs_available, waiting_queues)
+    print("Previous session restored successfully.")
+else:
+    try:
+        with open("cabs.json", "r") as file:
+            cab_data = json.load(file)
+
+        for cab in cab_data:
+            new_cab = Cab(
+                cab["name"],
+                cab["seats"],
+                False,
+                cab["headed_to"].strip().lower(),
+                [],
+                cab["time_slot"].strip().lower()
+            )
+            cabs_available.append(new_cab)
+
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        print("Could not load cabs:", error)
+
+
 
 #App menu and logic
 while True:
@@ -151,7 +228,7 @@ while True:
         waiting_request.append(request)
         heapq.heappush(waiting_queues.setdefault((location,time), []), (-(request.year),request.request_time,count,request))
         count+=1
-        
+        save_state(waiting_request,cabs_available,count)
     elif choice == "2" :
         #printing waiting students
         if len(waiting_request) == 0:
@@ -169,6 +246,8 @@ while True:
         cab_destination = input("Enter the destination of cab to be dispatched:").strip().lower()
         cab_time = input("Enter the time:").strip().lower()
         dipatch_cabs(cab_destination,cab_time,cabs_available)
+    elif choice == "6" :
+        save_state(waiting_request,cabs_available,count)    
     else:
         print("Invalid input")        
         
