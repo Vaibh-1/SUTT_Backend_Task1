@@ -3,6 +3,7 @@ from datetime import datetime
 import heapq
 from pathlib import Path
 
+
 class Cab:
     def __init__(self, name, seats, status, headed_to, students_list, time_slot):
         self.name = name
@@ -19,6 +20,15 @@ class Cab:
         print("Time slot: ",self.time_slot)
         print("Occupied seats: ",len(self.students_list),"/",self.seats)
 
+
+#Accpeted inputs for RideRequest
+times_accepted = ["morning","evening","afternoon","night"]
+locations_accepted = ["delhi","jaipur"]
+max_year = 5
+waiting_request = []
+cabs_available = []
+
+
 class RideRequest:
     def __init__(self, name, destination, time_slot, year, request_time):
         self.name = name
@@ -34,6 +44,7 @@ class RideRequest:
         print("Current academic year:",self.year)
         print("Time of request:",self.request_time)
 
+
 #Find matches (Final)
 def find_matches(cabs_available):
     for cabs in cabs_available:
@@ -43,13 +54,14 @@ def find_matches(cabs_available):
             selected = heapq.nsmallest(cabs.seats, queue)
             for requests in selected:
                 temporary_passengers.append(requests[3])    
-            cabs.display()            
+            cabs.display()  
+            if len(temporary_passengers) == 0:
+                print("There are no matches for this cab...")          
             print("Tentative Passengers:")    
             print(f"Potential Seats filled:{len(temporary_passengers)}/{cabs.seats}")         
             for passengers in temporary_passengers:
                 passengers.display()
-            if len(temporary_passengers) == 0:
-                print("There are no matches for this cab...")
+            
 
 #Final Dispatches considering seniority 
 def dipatch_cabs(cab_destination,cab_time,cabs_available):
@@ -72,7 +84,7 @@ def dipatch_cabs(cab_destination,cab_time,cabs_available):
                 cabs.status = True 
                 cabs.display()            
                 print("Final Passengers are above mentioned:")
-                save_state(waiting_request, cabs_available, count)
+                save_state(waiting_request, cabs_available, count) #Auto save after Dispacth
                 return 0
     print("no cabs are available at this time for this location please try again later...")
     return 0
@@ -104,6 +116,7 @@ def get_correct_name():
             return name
         else:
             print("Enter valid name") 
+
 
 #Functions to load and save app data
 def save_state(waiting_request,cabs_available,count):
@@ -141,7 +154,9 @@ def save_state(waiting_request,cabs_available,count):
         "count_of_requests": count 
     }
     with open("state.json", "w") as file:
-        json.dump(state, file, indent=4)     
+        json.dump(state, file, indent=4)    
+
+
 def load_data(waiting_request,cabs_available,waiting_queues):
     with open("state.json", "r") as file:
         state = json.load(file)
@@ -172,22 +187,35 @@ def load_data(waiting_request,cabs_available,waiting_queues):
     return max(
         len(waiting_request),
         state.get("count_of_requests", 0)
-    )     
-#Accpeted inputs for RideRequest
-times_accepted = ["morning","evening","afternoon","night"]
-locations_accepted = ["delhi","jaipur"]
-max_year = 5
-waiting_request = []
-cabs_available = []
-#inputting cabs from json and creating them into objects
-waiting_queues = {}
+    )  
 
+
+
+#inputting cabs from json or previous save file and creating them into objects
+waiting_queues = {}
 count = 0 
+fresh_start = True
+
 
 if Path("state.json").is_file():
-    count = load_data(waiting_request, cabs_available, waiting_queues)
-    print("Previous session restored successfully.")
+    try:
+        count = load_data(waiting_request, cabs_available, waiting_queues)
+        print("Previous session restored successfully.")
+        fresh_start = False
+
+    except (json.JSONDecodeError, KeyError, TypeError, ValueError, OSError) as error:  #informing user about error
+        print("Saved state is invalid:", error)
+        print("Starting fresh using cabs.json...")
+
+        waiting_request.clear()
+        waiting_queues.clear()
+        cabs_available.clear()
+        count = 0
 else:
+    print("No previous state found starting fresh...")
+
+# Load original cabs if saved data is unavailable
+if fresh_start:
     try:
         with open("cabs.json", "r") as file:
             cab_data = json.load(file)
@@ -201,22 +229,26 @@ else:
                 [],
                 cab["time_slot"].strip().lower()
             )
+
             cabs_available.append(new_cab)
 
-    except (FileNotFoundError, json.JSONDecodeError) as error:
-        print("Could not load cabs:", error)
+        print("Initial cabs loaded successfully.")
 
-
+    except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError, AttributeError) as error:
+        cabs_available.clear()
+        print("Could not load initial cabs error in cabs.json:", error)
 
 #App menu and logic
 while True:
     print("===CAB_FINDER===")
     print("1.to add new request")
     print("2.to view waiting students and available cabs")
-    print("3.to close app")
-    print("4.to find mathces")
-    print("5.to dispatch cabs")
+    print("3.to find mathces")
+    print("4.to dispatch cabs")
+    print("5.to close app")
     choice = input("Choose an option: ")
+
+
     if choice == "1":
         #input the correct info  
         name = get_correct_name()
@@ -228,7 +260,9 @@ while True:
         waiting_request.append(request)
         heapq.heappush(waiting_queues.setdefault((location,time), []), (-(request.year),request.request_time,count,request))
         count+=1
-        save_state(waiting_request,cabs_available,count)
+        save_state(waiting_request,cabs_available,count) #Auto Saving
+
+
     elif choice == "2" :
         #printing waiting students
         if len(waiting_request) == 0:
@@ -238,16 +272,22 @@ while True:
         #printing available cabs
         for i in range(0,len(cabs_available)):
             cabs_available[i].display()
+
+
     elif choice == "3" :
-        break
-    elif choice == "4" :
         find_matches(cabs_available)
-    elif choice == "5":
+
+
+    elif choice == "4":
         cab_destination = input("Enter the destination of cab to be dispatched:").strip().lower()
         cab_time = input("Enter the time:").strip().lower()
-        dipatch_cabs(cab_destination,cab_time,cabs_available)
-    elif choice == "6" :
-        save_state(waiting_request,cabs_available,count)    
+        dipatch_cabs(cab_destination,cab_time,cabs_available)  
+
+
+    elif choice == "5" :
+        break
+
+    
     else:
         print("Invalid input")        
         
