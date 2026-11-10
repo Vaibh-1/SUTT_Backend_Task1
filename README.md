@@ -1,7 +1,3 @@
-do this before pushing to github 
-git add README.md
-git commit -m "Add README with project documentation and complexity analysis"
-
 # Cab Pool Matcher
 
 A command-line app in Python for the end-of-semester cab rush. This is my submission for SUTT Backend Task 1.
