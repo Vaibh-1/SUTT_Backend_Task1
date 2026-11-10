@@ -32,14 +32,14 @@ Only Python and its standard library: `json`, `datetime`, `heapq` and `pathlib`.
 | `cabs.json` | The initial list of cabs (24 in the sample, three for every destination/time slot). |
 | `state.json` | Created automatically while the app runs. Stores the waiting students and the cabs. Don't edit it by hand. |
 | `README.md` | This file. |
-
 ## 5. Installation and Running
 
 ```bash
-git clone 
-cd 
+git clone https://github.com/Vaibh-1/SUTT_Backend_Task1.git
+cd SUTT_Backend_Task1
 python main.py
 ```
+
 
 (Use `python3` if `python` doesn't work on your system.) No packages need to be installed. Run it from inside the project folder, because `cabs.json` and `state.json` are opened by relative path.
 
