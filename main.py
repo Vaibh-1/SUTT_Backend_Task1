@@ -56,7 +56,8 @@ def find_matches(cabs_available):
                 temporary_passengers.append(requests[3])    
             cabs.display()  
             if len(temporary_passengers) == 0:
-                print("There are no matches for this cab...")          
+                print("There are no matches for this cab...") 
+                continue
             print("Tentative Passengers:")    
             print(f"Potential Seats filled:{len(temporary_passengers)}/{cabs.seats}")         
             for passengers in temporary_passengers:
